@@ -1,0 +1,38 @@
+# Prediction Models
+(Regression — output is a continuous value)
+
+**House Price Prediction** — classic regression on size, rooms, location, etc.
+
+**Heart Rate Prediction** — based on age, activity level, and health data.
+
+**Car Price Prediction** — predict resale price from make, model, mileage, etc.
+
+**Rainfall Prediction** — using weather data for future precipitation.
+
+**Electricity Consumption Prediction** — forecast daily/weekly energy usage.
+
+# Recommendation Models
+(Rank items for a user)
+
+**Movie Recommendation** — collaborative filtering on user ratings.
+
+**Book Recommendation** — based on genre, author, and similar readers.
+
+**Music Recommendation** — based on genre, artist, tempo.
+
+**E-commerce Product Recommendation** — using purchase history.
+
+**Recipe Recommendation** — based on ingredients and user preferences.
+
+# Classification Models
+(Class output — categories like yes/no, label groups)
+
+**Lung Cancer Prediction** — binary classification from symptoms/metrics.
+
+**Diabetes Prediction** — yes/no from health data.
+
+**Iris Flower Classification** — 3-class flower dataset (demo classic).
+
+**Spam Email Detection**— classify email text as spam or not.
+
+**Customer Churn Prediction** — classify if a customer will leave a service.
