@@ -3,7 +3,7 @@
 
 **House Price Prediction** — classic regression on size, rooms, location, etc.
 
-**Heart Rate Prediction** — based on age, activity level, and health data.
+**Heart Disease Prediction** — based on age, activity level, and health data.
 
 **Car Price Prediction** — predict resale price from make, model, mileage, etc.
 
