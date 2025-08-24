@@ -1,5 +1,5 @@
 import httpx
-import os 
+import os
 from dotenv import load_dotenv
 from .base import BaseLLMConnector
 
@@ -7,19 +7,20 @@ load_dotenv()
 
 class DeepSeekConnector(BaseLLMConnector):
     def __init__(self):
-        # Load key from env, fallback to hardcoded for testing
+        # Load key from env
         self.api_key = os.getenv("OPENROUTER_API_KEY")
-        print("API Key loaded:", self.api_key[:10] + "...")
         
-        # Correct endpoint
+            # API endpoint
         self.url = "https://openrouter.ai/api/v1/chat/completions"
-        print("Endpoint:", self.url)
         
         # Default model
         self.model = os.getenv("DEEPSEEK_MODEL", "deepseek/deepseek-r1:free")
-        print("Using model:", self.model)
-        
-    async def chat(self, messages: list[dict]) -> str:
+
+    async def chat(self, messages: list[dict], session_id: str = None) -> str:
+        """
+        messages: list of dicts like [{"role": "user", "content": "Hello"}]
+        session_id: optional string to maintain session/context per user
+        """
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
@@ -28,6 +29,10 @@ class DeepSeekConnector(BaseLLMConnector):
             "model": self.model,
             "messages": messages
         }
+
+        # Include session_id if provided
+        if session_id:
+            payload["user"] = session_id  # OpenRouter uses 'user' field to track sessions
 
         async with httpx.AsyncClient() as client:
             resp = await client.post(self.url, json=payload, headers=headers)

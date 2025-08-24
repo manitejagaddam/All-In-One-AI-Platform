@@ -8,13 +8,20 @@ class QwenConnector(BaseLLMConnector):
         self.model = os.getenv("QWEN_MODEL", "qwen/qwen3-coder:free")
         self.url = "https://openrouter.ai/api/v1/chat/completions"
     
-    async def chat(self, messages: list[dict]) -> str:
-        # Make sure messages is a list of dicts: [{"role":"user","content":"..."}, ...]
+    async def chat(self, messages: list[dict], session_id: str = None) -> str:
+        """
+        messages: list of dicts like [{"role": "user", "content": "Hello"}]
+        session_id: optional string to maintain session/context per user
+        """
         headers = {"Authorization": f"Bearer {self.api_key}"}
         payload = {
             "model": self.model,
             "messages": messages
         }
+
+        # Include session_id if provided
+        if session_id:
+            payload["user"] = session_id  # OpenRouter uses 'user' field to track sessions
 
         async with httpx.AsyncClient() as client:
             resp = await client.post(self.url, json=payload, headers=headers)
