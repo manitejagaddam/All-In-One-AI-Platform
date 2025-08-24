@@ -1,12 +1,29 @@
-from qwen_api.client import Qwen
-from qwen_api.types.chat import ChatMessage
+import httpx
+import os
+from .base import BaseLLMConnector
 
-class qwenConnection:
-    def __init__(self, api_key : str):
-        self.client = Qwen(api_key=api_key)
+class QwenConnector(BaseLLMConnector):
+    def __init__(self):
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        self.model = os.getenv("QWEN_MODEL", "qwen/qwen3-coder:free")
+        self.url = "https://openrouter.ai/api/v1/chat/completions"
     
-    def send(self, messages, model="qwen2.5-omni-7b"):
-        chat_msgs = [ChatMessage(role=m["role"], content=m["content"]) for m in messages]
-        resp = self.client.chat.create(messages=chat_msgs, model=model)
-        return resp.choices[0].message.content
-        
+    async def chat(self, messages: list[dict]) -> str:
+        # Make sure messages is a list of dicts: [{"role":"user","content":"..."}, ...]
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        payload = {
+            "model": self.model,
+            "messages": messages
+        }
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(self.url, json=payload, headers=headers)
+            try:
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                print("Error from Qwen API:", resp.text)
+                raise e
+
+            data = resp.json()
+            # OpenRouter Chat API returns messages in data["choices"][0]["message"]["content"]
+            return data["choices"][0]["message"]["content"]

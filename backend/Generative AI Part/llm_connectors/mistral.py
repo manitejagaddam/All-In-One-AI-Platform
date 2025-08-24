@@ -1,22 +1,28 @@
-import requests
+import httpx
+import os
+from .base import BaseLLMConnector
 
-class mistralConnection:
-    def __init__(self, api_key : str):
-        self.api = api_key
-        self.url = "https://api.openrouter.ai/v1/chat/completions"
-        
-    def send(self, messages, model = "mistralai/mistral-7b-instruct:free"):
-        headers = {"Authorization": f"Bearer {self.api}"}
-        
+class MistralConnector(BaseLLMConnector):
+    def __init__(self):
+        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        self.model = os.getenv("MISTRAL_MODEL", "mistralai/mistral-small-3.2-24b-instruct:free")  # default free model
+        self.url = "https://openrouter.ai/api/v1/chat/completions"
+    
+    async def chat(self, messages: list[dict]) -> str:
+        headers = {"Authorization": f"Bearer {self.api_key}"}
         payload = {
-            "model" : model,
-            "messages" : messages
+            "model": self.model,
+            "messages": messages
         }
-        
-        r = requests.post(self.url, json=payload, headers=headers, timeout=10)
-        r.raise_for_status()
-        
-        j = r.json()
-        
-        return j["choices"][0]["messages"]["conte3xt"]
-        
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(self.url, json=payload, headers=headers)
+            try:
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                print("Error from OpenRouter API:", resp.text)
+                raise e
+
+            data = resp.json()
+            # OpenRouter returns messages under choices[0].message.content
+            return data["choices"][0]["message"]["content"]
