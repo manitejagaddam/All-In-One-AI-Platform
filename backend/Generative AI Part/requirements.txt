@@ -1,0 +1,10 @@
+fastapi 
+uvicorn 
+requests 
+python-dotenv 
+httpx
+openai
+qwen_api
+google-generativeai
+langchain
+qwen_api
