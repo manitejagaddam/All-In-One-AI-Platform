@@ -1,0 +1,166 @@
+# multi-llm-chat.plan
+
+**Project:** Multi-LLM Chat — "ModelSwitch" 
+
+**Owner:** Mani Teja Gaddam
+
+**Version:** 0.1
+
+**Created:** 2025-08-24
+
+---
+
+## 1 — One-line summary
+
+A minimal, secure, and cost-conscious chat application that allows users to continue a single conversation thread across different LLM providers (e.g., OpenAI ChatGPT, Google Gemini, Anthropic Claude, local LLMs) with easy model switching and context continuity.
+
+## 2 — Goals & success criteria
+
+* **MVP Goal:** Enable a user to start a conversation with one model and continue that same conversation with another model while keeping coherence.
+* **Success criteria (MVP):**
+
+  1. End-to-end flow: user message → provider A reply → user clicks “switch to provider B” → provider B replies coherently in the same thread.
+  2. Conversation stored and queryable in DB.
+  3. Basic cost/quotas enforced to prevent runaway charges.
+  4. Two provider connectors implemented (OpenAI + second provider stub/mock).
+
+## 3 — Scope (what's in / out for MVP)
+
+* **In:**
+
+  * Backend skeleton (Python/Flask or FastAPI) with adapter pattern for connectors.
+  * Postgres schema for users, conversations, messages, model\_providers, checkpoints.
+  * Simple React web UI: chat window + model selector + switch button.
+  * Connectors: OpenAI + mock Gemini connector.
+  * Token estimation + simple quota enforcement.
+  * Summarization checkpoint (basic, can be manual trigger).
+
+* **Out:**
+
+  * Billing integration with payment gateway.
+  * Production-grade auto-summarizer orchestration (advanced checkpointing and heuristics).
+  * Smart routing / multi-model fusion / comparator grid (post-MVP).
+
+## 4 — High-level milestones
+
+1. **M1 — Project setup & infra**
+
+   * Repo, docker-compose, Postgres, Redis, env vault sample.
+   * Basic CI pipeline (lint + tests).
+
+2. **M2 — Backend + connectors**
+
+   * Implement API endpoints: conversations, messages, switch model.
+   * Adapter interface and OpenAI connector + mock Gemini.
+
+3. **M3 — Frontend MVP**
+
+   * React app with chat UI, model dropdown, and switch action.
+   * Show model badge per assistant message.
+
+4. **M4 — Token guards & checkpoints**
+
+   * Token estimator and per-user quota checks.
+   * Manual summarization/checkpoint endpoint.
+
+5. **M5 — QA & local testing**
+
+   * Unit tests for connectors, integration tests for switching flow.
+   * Load test basic concurrency.
+
+6. **M6 — Launch internal alpha**
+
+   * Invite testers, collect feedback, fix critical bugs.
+
+## 5 — Deliverables (per milestone)
+
+* M1: repo skeleton, docker-compose, README with run instructions.
+* M2: backend code, connectors, DB migrations.
+* M3: frontend code, basic styling, run instructions.
+* M4: quota/safety module, checkpoint logic.
+* M5: tests + runbook.
+* M6: internal alpha release notes.
+
+## 6 — Roles & responsibilities
+
+* **Owner / PM:** Mani — final decisions, demo to stakeholders.
+* **Dev (Backend):** Implement connectors, API, DB migrations.
+* **Dev (Frontend):** Build chat UI and UX flows.
+* **QA:** Write and run integration tests.
+* **Ops:** Docker + compose for local dev, simple deployment script.
+
+> If you are solo, you wear all hats — start with the backend skeleton and frontend stub first.
+
+## 7 — Tech stack (MVP)
+
+* Backend: Python 3.11, FastAPI (or Flask if preferred), SQLAlchemy, Alembic
+* Frontend: React + Vite, Tailwind (or plain CSS), simple component structure
+* DB: Postgres
+* Cache: Redis (optional for dev but recommended)
+* Models: OpenAI API + mock/stub for second provider
+* Auth: JWT for MVP
+* Dev infra: Docker + docker-compose
+
+## 8 — Data model (short)
+
+* `users(id, email, hashed_password, quota)`
+* `conversations(id, owner_id, title, default_model)`
+* `messages(id, conversation_id, sender_type, model_id, content, metadata, created_at)`
+* `model_providers(id, provider, model_name, pricing_meta)`
+* `checkpoints(id, conversation_id, summary_text, start_msg_id, end_msg_id, created_at)`
+
+## 9 — API endpoints (MVP)
+
+* `POST /api/conversations` — create conversation
+* `GET /api/conversations/{id}` — get meta + last messages
+* `POST /api/conversations/{id}/messages` — post user message & get model reply
+* `POST /api/conversations/{id}/switch` — switch model and get continuation
+* `GET /api/models` — list available models
+
+## 10 — Flow examples (user stories)
+
+* **S1:** As a user, I start a convo with ChatGPT and later click “Switch to Gemini” to continue. The thread must show Gemini’s reply inline.
+* **S2:** As a user, I can view which model responded to each assistant message.
+* **S3:** As a user, if my quota is low, the system warns me and blocks large requests.
+
+## 11 — Risks & mitigations
+
+* **Risk:** High API costs. **Mitigation:** Quotas + token estimation + manual confirmation for large requests.
+* **Risk:** Context mismatch when switching models. **Mitigation:** Use a short system note and optional summary when switching; allow clarifying questions.
+* **Risk:** Provider TOS / privacy issues. **Mitigation:** Add ephemeral mode, encrypt PII, publish privacy policy.
+
+## 12 — Acceptance criteria (MVP)
+
+1. End-to-end switch works with stored conversation and readable continuity.
+2. DB stores message metadata including model\_id and token usage.
+3. Token guard prevents oversize requests and returns a clear error message.
+4. Basic integration tests run in CI and pass.
+
+## 13 — Implementation checklist (step-by-step)
+
+1. Initialize repo + docker-compose (postgres + redis + backend + frontend).
+2. Create DB models and migrations (users, conversations, messages, model\_providers, checkpoints).
+3. Implement BaseConnector + OpenAIConnector + MockConnector.
+4. Build FastAPI endpoints with JWT auth and simple user flow.
+5. Create minimal React UI: message list + input + model selector + switch.
+6. Implement token estimator and quota enforcement.
+7. Add simple manual checkpoint summarization endpoint.
+8. Write unit and integration tests.
+9. Run local alpha and fix bugs.
+
+## 14 — Sprint plan (suggested: 2-week sprints)
+
+* **Sprint 1 (setup):** Repo, docker-compose, DB models, basic FastAPI skeleton.
+* **Sprint 2 (connectors):** Implement connectors, send/receive flow, store messages.
+* **Sprint 3 (frontend):** Chat UI, model selector, switch flow.
+* **Sprint 4 (guards & QA):** Token guards, checkpointing, tests.
+* **Sprint 5 (alpha):** Internal testing, feedback cycle, polish.
+
+## 15 — Next actions (what I can produce right now)
+
+* Backend skeleton (FastAPI) + connector adapter (OpenAI + mock Gemini) with migrations and docker-compose.
+* Minimal React frontend that can switch models and show badges.
+
+---
+
+**Notes:** This .plan is intentionally concise but actionable. If you want, I can convert it into a printable markdown, a README, or split it into JIRA-style tickets. Tell me which format you want next.
