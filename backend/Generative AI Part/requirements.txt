@@ -8,3 +8,4 @@ qwen_api
 google-generativeai
 langchain
 qwen_api
+httpx
