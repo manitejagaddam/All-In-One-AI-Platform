@@ -17,4 +17,9 @@ class DeepSeekConnector(BaseLLMConnector):
         }
         
         async with httpx.AsyncClient() as client:
-            resp = await client.post(url, json=payload, headers=headers)
+            resp = await client.post(self.url, json=payload, headers=headers)
+            resp.raise_for_status()
+            
+            data = resp.json()
+            
+            return data["choices"][0]["message"]["content"]
