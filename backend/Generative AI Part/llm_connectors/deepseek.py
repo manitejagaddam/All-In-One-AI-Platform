@@ -11,7 +11,7 @@ class DeepSeekConnector(BaseLLMConnector):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         
             # API endpoint
-        self.url = "https://openrouter.ai/api/v1/chat/completions"
+        self.url = os.getenv("OPENROUTER_URL")
         
         # Default model
         self.model = os.getenv("DEEPSEEK_MODEL", "deepseek/deepseek-r1:free")

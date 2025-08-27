@@ -8,7 +8,7 @@ class MistralConnector(BaseLLMConnector):
         self.model = os.getenv(
             "MISTRAL_MODEL", "mistralai/mistral-small-3.2-24b-instruct:free"
         )  # default free model
-        self.url = "https://openrouter.ai/api/v1/chat/completions"
+        self.url = os.getenv("OPENROUTER_URL")
     
     async def chat(self, messages: list[dict], session_id: str = None) -> str:
         """

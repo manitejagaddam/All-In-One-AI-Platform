@@ -6,7 +6,7 @@ class QwenConnector(BaseLLMConnector):
     def __init__(self):
         self.api_key = os.getenv("OPENROUTER_API_KEY")
         self.model = os.getenv("QWEN_MODEL", "qwen/qwen3-coder:free")
-        self.url = "https://openrouter.ai/api/v1/chat/completions"
+        self.url = os.getenv("OPENROUTER_URL")
     
     async def chat(self, messages: list[dict], session_id: str = None) -> str:
         """
