@@ -8,13 +8,16 @@ load_dotenv()
 class DeepSeekConnector(BaseLLMConnector):
     def __init__(self):
         # Load key from env
-        self.api_key = os.getenv("OPENROUTER_API_KEY")
+        api_key = os.getenv("OPENROUTER_API_KEY")
         
             # API endpoint
-        self.url = os.getenv("OPENROUTER_URL")
+        url = os.getenv("OPENROUTER_URL")
+        # print(url)
         
         # Default model
-        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek/deepseek-r1:free")
+        model = os.getenv("DEEPSEEK_MODEL", "deepseek/deepseek-r1:free")
+        
+        super().__init__(api=api_key, url=url, model=model)
 
     async def chat(self, messages: list[dict], session_id: str = None) -> str:
         """

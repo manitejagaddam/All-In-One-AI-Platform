@@ -1,12 +1,17 @@
 import httpx
 import os
 from .base import BaseLLMConnector
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class QwenConnector(BaseLLMConnector):
     def __init__(self):
-        self.api_key = os.getenv("OPENROUTER_API_KEY")
-        self.model = os.getenv("QWEN_MODEL", "qwen/qwen3-coder:free")
-        self.url = os.getenv("OPENROUTER_URL")
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        model = os.getenv("QWEN_MODEL", "qwen/qwen3-coder:free")
+        url = os.getenv("OPENROUTER_URL")
+        
+        super().__init__(api=api_key, model=model, url=url)
     
     async def chat(self, messages: list[dict], session_id: str = None) -> str:
         """
